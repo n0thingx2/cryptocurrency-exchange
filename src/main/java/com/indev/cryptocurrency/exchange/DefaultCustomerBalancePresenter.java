@@ -1,15 +1,9 @@
 package com.indev.cryptocurrency.exchange;
 
-public class DefaultCustomerBalancePresenter implements CustomerBalancePresenter{
-    private String getBalanceRepresentation(int balance) {
-        return balance + ":$";
-    }
+public class DefaultCustomerBalancePresenter implements BalanceRepresenter {
 
     @Override
-    public String getBalanceRepresentation(String cryptoName, int cryptoBalance, int balance) {
-        if(cryptoName.isEmpty()){
-            return getBalanceRepresentation(balance);
-        }
-        return balance+":$,"+cryptoBalance+":"+cryptoName;
+    public String getRepresentation(int balance) {
+        return balance+":$";
     }
 }

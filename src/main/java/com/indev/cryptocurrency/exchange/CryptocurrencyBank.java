@@ -6,7 +6,7 @@ import java.util.List;
 public class CryptocurrencyBank{
 
     private List<String> supportedCryptoCurrency = new ArrayList<>();
-    private List<Customer> cryptocurrencySellers = new ArrayList<>();
+    private List<AbstractCustomer> cryptocurrencySellers = new ArrayList<>();
 
     private CurrencyPriceCalculator priceCalculator = new DefaultCurrencyPriceCalculator();
 
@@ -15,31 +15,23 @@ public class CryptocurrencyBank{
     }
 
     public int requestTransaction(Customer buyer, int cryptoAmount, String cryptoName) {
-        if(isAnyCryptoSellersAvailable(cryptoName)){
-            Customer seller = getSellerOfCryptoBalance(cryptoName);
-            int finalAmount = priceCalculator.getCurrencyPrice(cryptoAmount);
-            seller.sell(finalAmount, cryptoAmount);
-            buyer.buy(cryptoName, finalAmount, cryptoAmount);
-            return cryptoAmount;
-        }
-        return 0;
+        AbstractCustomer seller = getSellerByCryptoName(cryptoName);
+        int cryptoPriceByBuyersNumber = priceCalculator.getCurrencyPrice(cryptoAmount);
+
+        seller.doTransaction(TransactionRequest
+                .makeTransaction(cryptoPriceByBuyersNumber, cryptoAmount,cryptoName,buyer));
+        return cryptoAmount;
     }
 
-
-    private Customer getSellerOfCryptoBalance(String cryptoName) {
+    private AbstractCustomer getSellerByCryptoName(String cryptoName) {
         return cryptocurrencySellers.stream()
                 .filter(seller -> seller.hasCryptocurrency(cryptoName))
-                .findAny()
-                .get();
-    }
-
-    private boolean isAnyCryptoSellersAvailable(String cryptoName) {
-        return cryptocurrencySellers.stream()
-                .anyMatch(availableSeller->availableSeller.hasCryptocurrency(cryptoName));
+                .findFirst()
+                .orElse(new NullCustomer());
     }
 
 
-    public void addSeller(Customer sellerCustomer) {
+    void addSeller(Customer sellerCustomer) {
         cryptocurrencySellers.add(sellerCustomer);
     }
 }

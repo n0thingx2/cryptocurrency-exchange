@@ -1,20 +1,23 @@
 package com.indev.cryptocurrency.exchange;
 
-public class Customer {
+public class Customer implements AbstractCustomer {
 
-    private String cryptocurrencyName = "";
-    private int cryptocurrencyBalance;
+    private Walette walette;
     private int balance;
 
     public Customer withCryptocurrency(String cryptocurrencyName, int cryptocurrencyBalance) {
-        this.cryptocurrencyName = cryptocurrencyName;
-        this.cryptocurrencyBalance = cryptocurrencyBalance;
+        initWaletteWithCryptocurrency(cryptocurrencyName, cryptocurrencyBalance);
         return this;
+    }
+
+    private void initWaletteWithCryptocurrency(String cryptocurrencyName, int cryptocurrencyBalance) {
+        walette = new Walette(cryptocurrencyName, cryptocurrencyBalance);
     }
 
     @Override
     public String toString() {
-        return new DefaultCustomerBalancePresenter().getBalanceRepresentation(cryptocurrencyName, cryptocurrencyBalance,balance);
+        return new DefaultCustomerBalancePresenter().getRepresentation(balance) +
+                new DefaultWaletteBalanceRepresenter().getRepresentation(walette);
     }
 
     public Customer withBalance(int balance) {
@@ -23,18 +26,29 @@ public class Customer {
     }
 
     public boolean hasCryptocurrency(String cryptocurrencyName){
-        return this.cryptocurrencyName.equals(cryptocurrencyName);
+        return walette.hasCryptocurrency(cryptocurrencyName);
     }
 
-    public void buy(String cryptoName, int amount, int cryptoAmount){
-        cryptocurrencyName = cryptoName;
-        reduceBalanceByAmount(amount);
-        addCryptoBalanceByAmount(cryptoAmount);
+    @Override
+    public void doTransaction(TransactionRequest transactionRequest) {
+        sell(transactionRequest.getCryptoPrice(), transactionRequest.getCryptoAmount());
+        transactionRequest.getBuyer().buy(transactionRequest.getCryptoName()
+                                        ,transactionRequest.getCryptoPrice()
+                                        ,transactionRequest.getCryptoAmount());
+
     }
 
-    public void sell(int amount, int cryptoAmount){
-        addBalanceByAmount(amount);
-        reduceCryptoBalanceByAmount(cryptoAmount);
+    private void buy(String boughtCryptoName, int cryptoPrice, int cryptoAmount){
+        if(walette == null){
+            walette = new Walette(boughtCryptoName);
+        }
+        walette.addCryptocurrencyBalance(cryptoAmount);
+        reduceBalanceByAmount(cryptoPrice);
+    }
+
+    private void sell(int cryptoPrice, int cryptoAmount){
+        addBalanceByAmount(cryptoPrice);
+        walette.reduceCryptocurrencyBalance(cryptoAmount);
     }
 
     private void addBalanceByAmount(int amount){
@@ -43,13 +57,5 @@ public class Customer {
 
     private void reduceBalanceByAmount(int amount){
         balance -= amount;
-    }
-
-    private void reduceCryptoBalanceByAmount(int cryptoAmount) {
-        this.cryptocurrencyBalance -= cryptoAmount;
-    }
-
-    private void addCryptoBalanceByAmount(int cryptoAmount) {
-        this.cryptocurrencyBalance += cryptoAmount;
     }
 }
