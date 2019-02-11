@@ -2,8 +2,9 @@ package com.indev.cryptocurrency.exchange;
 
 public class Customer {
 
-    String cryptocurrencyName;
-    int cryptocurrencyBalance;
+    private String cryptocurrencyName;
+    private int cryptocurrencyBalance;
+    private int balance;
 
     public Customer withCryptocurrency(String cryptocurrencyName, int cryptocurrencyBalance) {
         this.cryptocurrencyName = cryptocurrencyName;
@@ -13,14 +14,15 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "0:$" +
-                "," +
+        return balance +
+                ":$," +
                 cryptocurrencyBalance +
                 ":" +
                 cryptocurrencyName;
     }
 
-    public Customer withBalance(int i) {
-        return null;
+    public Customer withBalance(int balance) {
+        this.balance = balance;
+        return this;
     }
 }

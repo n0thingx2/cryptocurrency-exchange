@@ -5,13 +5,18 @@ import java.util.List;
 
 public class CryptocurrencyBank {
 
-    List<String> supportedCryptoCurrency = new ArrayList<String>();
+    private List<String> supportedCryptoCurrency = new ArrayList<>();
+    private List<Customer> cryptocurrencySellers = new ArrayList<>();
 
     public void addSupportedCryptoCurrency(String cryptoCurrencyName) {
         supportedCryptoCurrency.add(cryptoCurrencyName);
     }
 
-    public int requestTransaction(Customer buyerCustomer, int i, String bitcoin) {
+    public int requestTransaction(Customer buyerCustomer, int cryptoBalance, String cryptoName) {
+//        for (Customer seller:cryptocurrencySellers){
+//            if()
+//        }
+
         return 0;
     }
 
